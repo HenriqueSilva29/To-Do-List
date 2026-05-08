@@ -2,7 +2,7 @@
 
 namespace Application.Funcionalidades.Tarefas.Dtos.Subtarefas
 {
-    public class AdicionarSubtarefaRequisicao
+    public class AdicionarSubtarefaRequisicao : Application.Funcionalidades.Tarefas.Dtos.IDadosTarefaRequisicao
     {
         public string Titulo { get; set; }
         public string? Descricao { get; set; }

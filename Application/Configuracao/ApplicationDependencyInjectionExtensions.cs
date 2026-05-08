@@ -26,6 +26,7 @@ using Application.Funcionalidades.Usuarios.Servicos;
 using Application.Interfaces.Messaging;
 using Application.Messaging.MessageHandlers;
 using Application.Utils.Transacao;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Configuracao
@@ -34,6 +35,8 @@ namespace Application.Configuracao
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
+            services.AddValidatorsFromAssembly(typeof(ApplicationDependencyInjectionExtensions).Assembly);
+
             services.AddApplicationServices();
             services.AddApplicationUseCases();
             services.AddApplicationMessaging();

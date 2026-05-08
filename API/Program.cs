@@ -1,4 +1,5 @@
 using API.Configuracao;
+using API.Filtros;
 using API.Hubs;
 using API.Middlewares;
 using Application.Configuracao;
@@ -38,7 +39,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddRazorPages();
-builder.Services.AddControllers()
+builder.Services.AddControllers(options =>
+    {
+        options.Filters.Add<FluentValidationFilter>();
+    })
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;

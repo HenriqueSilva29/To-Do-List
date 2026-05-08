@@ -2,7 +2,7 @@
 
 namespace Application.Funcionalidades.Tarefas.Dtos
 {
-    public class AtualizarTarefaRequisicao
+    public class AtualizarTarefaRequisicao : IDadosTarefaRequisicao
     {
         public string Titulo { get; set; }
         public string? Descricao { get; set; }
