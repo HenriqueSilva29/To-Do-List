@@ -1,31 +1,37 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Repository.Repositorys.LembreteRep;
+using Repository.Repositorios.Lembretes;
 using Application.Utils.Transacao;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Repository.ContextEFs;
+using Repository.ContextosEF;
 using Application.Interfaces.Messaging;
-using Infra.Mensageria.RabbitMQ.Channels;
-using Infra.Mensageria.RabbitMQ.Connections;
-using Infra.Mensageria.RabbitMQ.Topology;
+using Infra.Messaging.RabbitMQ.Channels;
+using Infra.Messaging.RabbitMQ.Connections;
+using Infra.Messaging.RabbitMQ.Publicadores;
+using Infra.Messaging.RabbitMQ.Topology;
 using Application.Emails;
 using Application.Interfaces.Email;
-using Application.UseCase.Lembretes;
+using Application.Funcionalidades.Lembretes.CasosDeUso;
 using Hangfire;
 using Hangfire.SqlServer;
 using Infra.BackgroundJobs.Hangfire.Jobs.Lembretes;
-using Application.Interfaces.UseCases.Lembretes;
-using Infra.Messaging.RabbitMQ.Topology;
+using Application.Funcionalidades.Lembretes.Contratos.CasosDeUso;
+using Application.Funcionalidades.Notificacoes.Contratos.CasosDeUso;
+using Infra.Messaging.RabbitMQ.Consumidores;
 using Infra.Messaging.RabbitMQ.Topology.Topologies.Tarefas;
-using Application.Events.Tarefas;
+using Infra.Messaging.RabbitMQ.Topology.Topologies.Notificacoes;
+using Application.Funcionalidades.Tarefas.Eventos;
 using Application.Messaging.MessageHandlers;
 using Infra.Messaging.RabbitMQ.Consumidores.Tarefas;
-using Repository.TarefaRep;
-using Repository.Repositorys.ParamGeralRep;
-using Infra.Notifications;
+using Repository.Repositorios.Tarefas;
+using Repository.Repositorios.Notificacoes;
+using Repository.Repositorios.ParamGerais;
+using Infra.Notificacoes;
 using System.Text;
+using Application.Funcionalidades.Notificacoes.CasosDeUso;
+using Application.Observabilidade;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((hostContext, config) =>
@@ -39,7 +45,12 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureLogging(logging =>
     {
         logging.ClearProviders();
-        logging.AddConsole();
+        logging.AddSimpleConsole(options =>
+        {
+            options.IncludeScopes = true;
+            options.SingleLine = true;
+            options.TimestampFormat = "yyyy-MM-dd HH:mm:ss ";
+        });
     })
     .ConfigureServices((hostContext, services) =>
     {
@@ -50,7 +61,7 @@ var host = Host.CreateDefaultBuilder(args)
         Console.WriteLine("======================================");
 
         services.AddHostedService<RabbitInitializerHostedService>();
-        services.AddHostedService<Worker>();
+        services.AddHostedService<RabbitConsumerHostedService>();
 
         services.AddDbContext<ContextEF>(options =>
             options.UseSqlServer(
@@ -64,29 +75,34 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddScoped<IRepLembrete, RepLembrete>();
         services.AddScoped<IRepTarefa, RepTarefa>();
         services.AddScoped<IRepParamGeral, RepParamGeral>();
+        services.AddScoped<IRepNotificacao, RepNotificacao>();
 
         // RabbitMQ
         services.AddSingleton<IRabbitConnection, RabbitConnection>();
         services.AddSingleton<IRabbitChannelFactory, RabbitChannelFactory>();
+        services.AddSingleton<ICorrelationContextAccessor, CorrelationContextAccessor>();
+        services.AddScoped<IRabbitEventPublisher, RabbitEventPublisher>();
 
         //Consumidores
         services.AddSingleton<IMessageConsumer, GerarLembreteConsumer>();
 
         //Evento
-        services.AddScoped<IMessageHandler<TarefaCriadaEvent>, GerarLembreteMessageHandler>();
+        services.AddScoped<IMessageHandler<TarefaCriadaEvento>, GerarLembreteMessageHandler>();
 
         //UseCase
-        services.AddScoped<IEnviarLembretePorEmailUseCase, EnviarLembretePorEmailUseCase>();
-        services.AddScoped<IGerarLembreteUseCase,TarefaCriadaGerarLembreteUseCase>();
-        services.AddScoped<IAgendarLembreteJobScheduler, AgendarLembreteJobScheduler>();
-        services.AddScoped<IAgendarLembreteUseCase, AgendarLembreteUseCase>();
-        services.AddScoped<IDispararLembreteUseCase, DispararLembreteUseCase>();
+        services.AddScoped<IEnviarLembretePorEmailCasoDeUso, EnviarLembretePorEmailCasoDeUso>();
+        services.AddScoped<IGerarLembreteCasoDeUso,TarefaCriadaGerarLembreteCasoDeUso>();
+        services.AddScoped<IAgendadorJobLembrete, AgendarLembreteJobScheduler>();
+        services.AddScoped<IAgendarLembreteCasoDeUso, AgendarLembreteCasoDeUso>();
+        services.AddScoped<IDispararLembreteCasoDeUso, DispararLembreteCasoDeUso>();
+        services.AddScoped<ICriarNotificacaoCasoDeUso, CriarNotificacaoCasoDeUso>();
 
         services.AddScoped<IMessageDispatcher, MessageDispatcher>();
 
         //Topologia
         services.AddScoped<IRabbitTopologyInitializer, RabbitTopologyInitializer>();
         services.AddScoped<IRabbitTopology, GerarLembreteTopology>();
+        services.AddScoped<IRabbitTopology, NotificacaoCriadaTopology>();
 
         services.AddScoped<LembreteEmailCompose>();
         services.AddScoped<IEmail, Email>();
@@ -103,10 +119,10 @@ var host = Host.CreateDefaultBuilder(args)
 
         services.AddHangfireServer(options =>
         {
-            options.ServerName = "API-Hangfire-Server";
+            options.ServerName = "Worker-Hangfire-Server";
         });
 
-        services.Configure<EmailOptions>(
+        services.Configure<OpcoesEmail>(
             hostContext.Configuration.GetSection("Email"));
 
     })
@@ -150,3 +166,5 @@ static void ValidateRequiredConfiguration(IConfiguration configuration)
         }
     }
 }
+
+

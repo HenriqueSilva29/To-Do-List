@@ -1,20 +1,20 @@
-﻿using Application.Events.Tarefas;
+using Application.Funcionalidades.Tarefas.Eventos;
 using Application.Interfaces.Messaging;
-using Application.Interfaces.UseCases.Lembretes;
+using Application.Funcionalidades.Lembretes.Contratos.CasosDeUso;
 
 namespace Application.Messaging.MessageHandlers
 {
-    public class GerarLembreteMessageHandler : IMessageHandler<TarefaCriadaEvent>
+    public class GerarLembreteMessageHandler : IMessageHandler<TarefaCriadaEvento>
     {
-        readonly IGerarLembreteUseCase _useCase;
+        readonly IGerarLembreteCasoDeUso _useCase;
 
-        public GerarLembreteMessageHandler(IGerarLembreteUseCase useCase)
+        public GerarLembreteMessageHandler(IGerarLembreteCasoDeUso useCase)
         {
             _useCase = useCase;
         }
-        public async Task HandleAsync(TarefaCriadaEvent evento)
-        {
-            await _useCase.ExecuteAsync(evento);
-        }
+
+        public Task HandleAsync(TarefaCriadaEvento evento)
+            => _useCase.ExecuteAsync(evento);
+  
     }
 }

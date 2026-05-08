@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using Repository.ContextEFs;
+using Repository.ContextosEF;
 
 namespace Application.Utils.Transacao
 {
@@ -15,17 +15,10 @@ namespace Application.Utils.Transacao
 
         public async Task BeginTransactionAsync()
         {
-            try 
-            {
-                if (_transaction != null)
-                    return;
+            if (_transaction != null)
+                return;
 
-                _transaction = await _context.Database.BeginTransactionAsync();
-            }
-            catch (Exception ex) 
-            {
-                throw;
-            }
+            _transaction = await _context.Database.BeginTransactionAsync();
             
         }
 
@@ -66,3 +59,4 @@ namespace Application.Utils.Transacao
         }
     }
 }
+

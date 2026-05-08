@@ -1,44 +1,68 @@
-﻿using Application.Events.Tarefas;
+using Application.Funcionalidades.Notificacoes.Eventos;
+using Application.Funcionalidades.Tarefas.Eventos;
 using Application.Interfaces.Messaging;
 using Application.Messaging;
+using Application.Observabilidade;
+using Domain.Enumeradores;
+using Domain.Excecoes;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Text.Json;
 
 public class MessageDispatcher : IMessageDispatcher
 {
     private readonly IServiceProvider _provider;
+    private readonly ILogger<MessageDispatcher> _logger;
 
-    public MessageDispatcher(IServiceProvider provider)
+    public MessageDispatcher(
+        IServiceProvider provider,
+        ILogger<MessageDispatcher> logger)
     {
-        _provider = provider; 
+        _provider = provider;
+        _logger = logger;
     }
 
     public async Task DispatchAsync(string json)
     {
-        var Types = new Dictionary<string, Type>()
+        var types = new Dictionary<string, Type>()
         {
-            {nameof(TarefaCriadaEvent), typeof(TarefaCriadaEvent)},
-
+            { nameof(TarefaCriadaEvento), typeof(TarefaCriadaEvento) },
+            { nameof(NotificacaoCriadaEvento), typeof(NotificacaoCriadaEvento) },
         };
 
         var envelope = JsonSerializer.Deserialize<MessageEnvelope>(json);
 
         if (envelope == null)
-            throw new Exception("Envelope inválido");
+            throw new ExcecaoAplicacao(
+                EnumCodigosDeExcecao.EnvelopeMensagemInvalido,
+                "Envelope invalido");
 
-        if(!Types.TryGetValue(envelope.Type, out var eventType))
+        if (!types.TryGetValue(envelope.Type, out var eventType))
         {
-            throw new ApplicationException($"Tipo não mapeado: {envelope.Type} ");
+            throw new ExcecaoAplicacao(
+                EnumCodigosDeExcecao.TipoMensagemNaoMapeado,
+                $"Tipo nao mapeado: {envelope.Type}");
         }
 
         var evento = JsonSerializer.Deserialize(envelope.Payload, eventType);
 
         var handlerType = typeof(IMessageHandler<>).MakeGenericType(eventType);
-
         var handler = _provider.GetRequiredService(handlerType);
-
         var method = handlerType.GetMethod("HandleAsync");
 
-        await (Task)method.Invoke(handler, new[] { evento });
+        using var activity = ObservabilidadeFonte.ActivitySource.StartActivity(
+            $"message handler {eventType.Name}",
+            ActivityKind.Internal);
+
+        activity?.SetTag("messaging.message.type", eventType.Name);
+        activity?.SetTag("correlation.id", envelope.CorrelationId);
+
+        _logger.LogInformation(
+            "Despachando evento {Evento} para handler {Handler}",
+            eventType.Name,
+            handlerType.Name);
+
+        await (Task)method!.Invoke(handler, new[] { evento })!;
     }
 }

@@ -1,0 +1,14 @@
+.git
+.github
+.vs
+**/bin
+**/obj
+**/logs
+*.user
+*.suo
+.env
+.env.*
+!*.example
+Dockerfile*
+docker-compose*.yml
+docker-compose*.yaml

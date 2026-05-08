@@ -1,26 +1,41 @@
-﻿using Application.Events.Tarefas;
+using Application.Funcionalidades.Notificacoes.Eventos;
+using Application.Funcionalidades.Tarefas.Eventos;
+using Application.Interfaces.Messaging;
 using Application.Messaging;
-using Infra.Mensageria.RabbitMQ.Channels;
-using Infra.Messaging.RabbitMQ;
-using Infra.Messaging.RabbitMQ.Publicadores;
+using Application.Observabilidade;
+using Domain.Enumeradores;
+using Domain.Excecoes;
+using Infra.Messaging.RabbitMQ.Channels;
+using Infra.Messaging.RabbitMQ.Topology;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using Serilog.Context;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 
-namespace Infra.Mensageria.RabbitMQ.Publicadores
+namespace Infra.Messaging.RabbitMQ.Publicadores
 {
     public class RabbitEventPublisher : IRabbitEventPublisher
     {
         private readonly IRabbitChannelFactory _channelFactory;
+        private readonly ICorrelationContextAccessor _correlationContextAccessor;
+        private readonly ILogger<RabbitEventPublisher> _logger;
 
         private readonly Dictionary<Type, string> RoutingMap = new()
         {
-            {typeof(TarefaCriadaEvent),RoutingKeys.TarefaCriada}
+            { typeof(TarefaCriadaEvento), RoutingKeys.TarefaCriada },
+            { typeof(NotificacaoCriadaEvento), RoutingKeys.NotificacaoCriada }
         };
 
-        public RabbitEventPublisher(IRabbitChannelFactory channelFactory)
+        public RabbitEventPublisher(
+            IRabbitChannelFactory channelFactory,
+            ICorrelationContextAccessor correlationContextAccessor,
+            ILogger<RabbitEventPublisher> logger)
         {
             _channelFactory = channelFactory;
+            _correlationContextAccessor = correlationContextAccessor;
+            _logger = logger;
         }
 
         public async Task PublishAsync<T>(T @event)
@@ -28,14 +43,36 @@ namespace Infra.Mensageria.RabbitMQ.Publicadores
             var eventType = typeof(T);
 
             if (!RoutingMap.TryGetValue(eventType, out var routingKey))
-                throw new InvalidOperationException(
-                    $"RoutingKey não configurada para {eventType.Name}");
+                throw new ExcecaoInfra(
+                    EnumCodigosDeExcecao.RoutingKeyNaoConfigurada,
+                    $"RoutingKey nao configurada para {eventType.Name}");
 
+            using var activity = ObservabilidadeFonte.ActivitySource.StartActivity(
+                $"rabbitmq publish {eventType.Name}",
+                ActivityKind.Producer);
+
+            var correlationContext = _correlationContextAccessor.Context;
+
+            var correlationId = correlationContext?.CorrelationId
+                ?? Activity.Current?.TraceId.ToString()
+                ?? Guid.NewGuid().ToString("N");
+
+            var traceId = Activity.Current?.TraceId.ToString()
+                ?? correlationContext?.TraceId
+                ?? correlationId;
+
+            activity?.SetTag("messaging.system", "rabbitmq");
+            activity?.SetTag("messaging.destination", RabbitTopologyNames.EventsExchange);
+            activity?.SetTag("messaging.rabbitmq.routing_key", routingKey);
+            activity?.SetTag("messaging.message.type", eventType.Name);
+            activity?.SetTag("correlation.id", correlationId);
 
             var envelope = new MessageEnvelope
             {
                 Type = eventType.Name,
-                CorrelationId = Guid.NewGuid().ToString(),
+                CorrelationId = correlationId,
+                TraceParent = Activity.Current?.Id ?? correlationContext?.TraceParent,
+                TraceState = Activity.Current?.TraceStateString ?? correlationContext?.TraceState,
                 CreatedAt = DateTime.UtcNow,
                 Payload = JsonSerializer.Serialize(@event)
             };
@@ -45,19 +82,34 @@ namespace Infra.Mensageria.RabbitMQ.Publicadores
 
             using var channel = await _channelFactory.CreateChannelAsync();
 
+            using (LogContext.PushProperty("CorrelationId", correlationId))
+            using (LogContext.PushProperty("TraceId", traceId))
+            {
+                _logger.LogInformation(
+                    "Publicando evento RabbitMQ {Evento} com routing key {RoutingKey}",
+                    eventType.Name,
+                    routingKey);
+            }
+
             await channel.BasicPublishAsync(
-                exchange: "app.events",
+                exchange: RabbitTopologyNames.EventsExchange,
                 routingKey: routingKey,
                 mandatory: false,
                 basicProperties: new BasicProperties
                 {
                     Persistent = true,
                     ContentType = "application/json",
-                    MessageId = Guid.NewGuid().ToString()
+                    MessageId = Guid.NewGuid().ToString(),
+                    CorrelationId = correlationId,
+                    Headers = new Dictionary<string, object?>
+                    {
+                        ["traceparent"] = envelope.TraceParent,
+                        ["tracestate"] = envelope.TraceState,
+                        ["correlation-id"] = correlationId
+                    }
                 },
                 body: body
             );
-
         }
     }
 }
