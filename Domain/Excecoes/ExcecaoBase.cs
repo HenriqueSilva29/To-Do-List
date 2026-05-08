@@ -2,13 +2,18 @@
 {
     public abstract class ExcecaoBase : Exception
     {
-        public int StatusCode { get; }
         public string Code { get; }
         public abstract string Title { get; }
-        public ExcecaoBase(string code, string message, int statusCode) : base(message)
+
+        public ExcecaoBase(string code, string message) : base(message)
         {
             Code = code;
-            StatusCode = statusCode;
+        }
+
+        public ExcecaoBase(string code, string message, Exception innerException)
+            : base(message, innerException)
+        {
+            Code = code;
         }
     }
 }

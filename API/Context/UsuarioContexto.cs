@@ -1,9 +1,10 @@
 ﻿using Application.Interfaces.Context;
+using Domain.Comum;
 using System.Security.Claims;
 
 namespace API.Context
 {
-    public class UsuarioContexto : IUsuarioContexto
+    public class UsuarioContexto : IUsuarioContexto, IAuditoriaContexto
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -30,5 +31,7 @@ namespace API.Context
 
         public string? Nome =>
             _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value;
+
+        string? IAuditoriaContexto.IdUsuario => IdUsuario?.ToString();
     }
 }

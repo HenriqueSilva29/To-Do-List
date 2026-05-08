@@ -3,9 +3,8 @@ using Domain.Comum.ObjetosDeValor;
 
 namespace Domain.Entidades
 {
-    public class Notificacao : IEntidadeId<int>
+    public class Notificacao : Entidade<int>
     {
-        public int Id { get; set; }
         public int? CodigoUsuario { get; set; }
         public Usuario? Usuario { get; set; }
         public EnumTipoNotificacao Tipo { get; set; }

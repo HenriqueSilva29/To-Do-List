@@ -1,8 +1,7 @@
-﻿using Application.Interfaces.Context;
+using Application.Interfaces.Context;
 using Application.Funcionalidades.Notificacoes.Contratos.CasosDeUso;
 using Domain.Enumeradores;
 using Domain.Excecoes;
-using Microsoft.AspNetCore.Http;
 using Repository.Repositorios.Notificacoes;
 
 namespace Application.Funcionalidades.Notificacoes.CasosDeUso
@@ -34,8 +33,7 @@ namespace Application.Funcionalidades.Notificacoes.CasosDeUso
 
             throw new ExcecaoAplicacao(
                 EnumCodigosDeExcecao.CredenciaisInvalidas,
-                "Usuario autenticado nao identificado.",
-                StatusCodes.Status401Unauthorized);
+                "Usuario autenticado nao identificado.");
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using Domain.Comum;
 namespace Domain.Entidades
 {
-    public class Usuario : IEntidadeId<int>
+    public class Usuario : Entidade<int>
     {
-        public int Id { get; }
         public string Email { get; set; }
         public string SenhaHash { get; private set; }
         public string Role { get; private set; }

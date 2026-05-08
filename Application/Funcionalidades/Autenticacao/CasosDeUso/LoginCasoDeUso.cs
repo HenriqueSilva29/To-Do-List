@@ -2,7 +2,6 @@ using Application.Funcionalidades.Autenticacao.Contratos.CasosDeUso;
 using Application.Funcionalidades.Autenticacao.Dtos;
 using Domain.Enumeradores;
 using Domain.Excecoes;
-using Microsoft.AspNetCore.Http;
 using Repository.Repositorios.Usuarios;
 
 namespace Application.Funcionalidades.Autenticacao.CasosDeUso
@@ -27,16 +26,14 @@ namespace Application.Funcionalidades.Autenticacao.CasosDeUso
             if (usuario == null)
                 throw new ExcecaoAplicacao(
                     EnumCodigosDeExcecao.CredenciaisInvalidas,
-                    "Email ou senha invalidos",
-                    StatusCodes.Status401Unauthorized);
+                    "Email ou senha invalidos");
 
             var senhaValida = _verificarSenha.Executar(usuario, request.Senha);
 
             if (!senhaValida)
                 throw new ExcecaoAplicacao(
                     EnumCodigosDeExcecao.CredenciaisInvalidas,
-                    "Email ou senha invalidos",
-                    StatusCodes.Status401Unauthorized);
+                    "Email ou senha invalidos");
 
             return new AutenticacaoResposta
             {

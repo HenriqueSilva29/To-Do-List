@@ -2,9 +2,8 @@
 
 namespace Domain.Entidades
 {
-    public class ParamGeral : IEntidadeId<int>
+    public class ParamGeral : Entidade<int>
     {
-        public int Id { get; set; }
         public int CodigoUsuario { get; set; }
         public Usuario Usuario { get; set; } = default!;
         public bool NotificarTarefasAntesDoInicio { get; set; } = false;

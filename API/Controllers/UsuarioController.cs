@@ -19,7 +19,7 @@ namespace API.Controllers
         {
             var result =  await _aplic.RegistrarUsuario(dto);
 
-            return Created($"/usuarios/{result.id}", new { result.id });
+            return Created($"/usuarios/{result.Id}", new { result.Id });
         }
 
         [HttpPut("{id}")]

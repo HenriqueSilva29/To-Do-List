@@ -3,9 +3,8 @@ using Domain.Comum.ObjetosDeValor;
 
 namespace Domain.Entidades
 {
-    public class Auditoria : IEntidadeId<int>
+    public class Auditoria : Entidade<int>
     {
-        public int Id { get; set; }
         public string Entidade { get; set; } = default!;
         public int IdEntidade { get; set; }
         public string Acao { get; set; } = default!;

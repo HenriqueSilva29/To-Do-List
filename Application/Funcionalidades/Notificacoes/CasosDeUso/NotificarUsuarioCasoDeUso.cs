@@ -1,9 +1,8 @@
-﻿using Application.Funcionalidades.Notificacoes.Dtos;
+using Application.Funcionalidades.Notificacoes.Dtos;
 using Application.Funcionalidades.Notificacoes.Eventos;
 using Application.Funcionalidades.Notificacoes.Contratos.TempoReal;
 using Domain.Enumeradores;
 using Domain.Excecoes;
-using Microsoft.AspNetCore.Http;
 using Repository.Repositorios.Notificacoes;
 
 namespace Application.Funcionalidades.Notificacoes.CasosDeUso
@@ -26,14 +25,12 @@ namespace Application.Funcionalidades.Notificacoes.CasosDeUso
             if (notificacao is null)
                 throw new ExcecaoAplicacao(
                     EnumCodigosDeExcecao.RegistroNaoEncontrado,
-                    "Notificacao nao encontrada.",
-                    StatusCodes.Status404NotFound);
+                    "Notificacao nao encontrada.");
 
             if (!notificacao.CodigoUsuario.HasValue)
                 throw new ExcecaoAplicacao(
                     EnumCodigosDeExcecao.RegistroSemUsuarioVinculado,
-                    "Notificacao sem usuario vinculado.",
-                    StatusCodes.Status409Conflict);
+                    "Notificacao sem usuario vinculado.");
 
             await _notificacaoTempoReal.NotificarUsuarioAsync(
                 notificacao.CodigoUsuario.Value,

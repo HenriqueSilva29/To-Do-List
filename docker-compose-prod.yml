@@ -1,0 +1,53 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: todolist-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - todolist-net
+    restart: unless-stopped
+
+  api:
+    container_name: todolist-api
+    build:
+      context: .
+      dockerfile: API/Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: ${AZURE_SQL_CONNECTION_STRING}
+      RabbitMQ__Uri: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/"
+    ports:
+      - "127.0.0.1:5000:8080"
+    networks:
+      - todolist-net
+    restart: unless-stopped
+
+  worker:
+    container_name: todolist-worker
+    build:
+      context: .
+      dockerfile: Worker/Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    environment:
+      ConnectionStrings__Default: ${AZURE_SQL_CONNECTION_STRING}
+      RabbitMQ__Uri: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/"
+    networks:
+      - todolist-net
+    restart: unless-stopped
+
+networks:
+  todolist-net:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:

@@ -1,11 +1,10 @@
-﻿using Application.Funcionalidades.Usuarios.Dtos;
+using Application.Funcionalidades.Usuarios.Dtos;
 using Application.Funcionalidades.Autenticacao.Contratos.CasosDeUso;
 using Application.Funcionalidades.Usuarios.Contratos.CasosDeUso;
 using Application.Utils.Transacao;
 using Domain.Entidades;
 using Domain.Enumeradores;
 using Domain.Excecoes;
-using Microsoft.AspNetCore.Http;
 using Repository.Repositorios.ParamGerais;
 using Repository.Repositorios.Usuarios;
 
@@ -31,27 +30,26 @@ namespace Application.Funcionalidades.Usuarios.CasosDeUso
 
         public async Task<UsuarioResposta> ExecutarAsync(RegistrarUsuarioRequisicao dto)
         {
-            await _unitOfWork.BeginTransactionAsync();
-
             var usuarioExistente = await _rep.ObterUsuarioPorEmail(dto.Email);
 
             if (usuarioExistente is not null)
                 throw new ExcecaoAplicacao(
                     EnumCodigosDeExcecao.UsuarioJaCadastrado,
-                    "Usuario ja cadastrado na base de dados",
-                    StatusCodes.Status409Conflict);
+                    "Usuario ja cadastrado na base de dados");
 
             var senhaHash = _hashSenha.Executar(dto.Senha);
 
             var usuario = new Usuario(dto.Email, senhaHash);
             var paramGeral = ParamGeral.CriarPadrao(usuario);
 
+            await _unitOfWork.BeginTransactionAsync();
+
             _rep.Adicionar(usuario);
             _repParamGeral.Adicionar(paramGeral);
 
             await _unitOfWork.CommitTransactionAsync();
 
-            return new UsuarioResposta { id = usuario.Id };
+            return new UsuarioResposta { Id = usuario.Id };
         }
     }
 }

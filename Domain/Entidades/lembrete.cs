@@ -1,14 +1,11 @@
 ﻿using Domain.Comum;
 using Domain.Enumeradores;
 using Domain.Excecoes;
-using Microsoft.AspNetCore.Http;
 
 namespace Domain.Entidades
 {
-    public class Lembrete : IEntidadeId<int>
+    public class Lembrete : Entidade<int>
     {
-        public int Id { get; private set; }
-
         public int CodigoTarefa { get; private set; }
         public Tarefa Tarefa { get;  set; }
         public DateTimeOffset DataDisparo { get; private set; }
@@ -47,8 +44,7 @@ namespace Domain.Entidades
             if (Status == EnumLembreteStatus.Executado)
                 throw new ExcecaoDominio(
                     EnumCodigosDeExcecao.LembreteJaEnviado,
-                    "Lembrete já foi enviado",
-                    StatusCodes.Status409Conflict);
+                    "Lembrete já foi enviado");
 
             Status = EnumLembreteStatus.Cancelado;
         }

@@ -1,3 +1,5 @@
+using Domain.Enumeradores;
+using Domain.Excecoes;
 using Infra.Messaging.RabbitMQ.Topology;
 using RabbitMQ.Client;
 
@@ -18,7 +20,9 @@ namespace Infra.Messaging.RabbitMQ.Topology
         {
             if (!_topologies.Any())
             {
-                throw new Exception("Nenhuma topologia RabbitMQ registrada");
+                throw new ExcecaoInfra(
+                    EnumCodigosDeExcecao.TopologiaRabbitNaoRegistrada,
+                    "Nenhuma topologia RabbitMQ registrada");
             }
 
             foreach (var topology in _topologies)

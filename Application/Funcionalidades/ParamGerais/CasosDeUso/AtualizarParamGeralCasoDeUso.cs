@@ -1,4 +1,4 @@
-﻿using Application.Funcionalidades.ParamGerais.Dtos;
+using Application.Funcionalidades.ParamGerais.Dtos;
 using Application.Funcionalidades.ParamGerais.Contratos.CasosDeUso;
 using Application.Funcionalidades.ParamGerais.Mapeadores;
 using Application.Funcionalidades.UsuarioAutenticado.Servicos;
@@ -6,7 +6,6 @@ using Application.Utils.Transacao;
 using Domain.Entidades;
 using Domain.Enumeradores;
 using Domain.Excecoes;
-using Microsoft.AspNetCore.Http;
 using Repository.Repositorios.ParamGerais;
 using Repository.Repositorios.Usuarios;
 
@@ -46,8 +45,7 @@ namespace Application.Funcionalidades.ParamGerais.CasosDeUso
                 if (usuario is null)
                     throw new ExcecaoAplicacao(
                         EnumCodigosDeExcecao.RegistroNaoEncontrado,
-                        "Usuario autenticado nao encontrado.",
-                        StatusCodes.Status404NotFound);
+                        "Usuario autenticado nao encontrado.");
 
                 paramGeral = ParamGeral.CriarPadrao(usuario);
             }

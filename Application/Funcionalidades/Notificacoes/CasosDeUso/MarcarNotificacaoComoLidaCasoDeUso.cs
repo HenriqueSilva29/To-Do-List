@@ -1,9 +1,8 @@
-﻿using Application.Funcionalidades.Notificacoes.Contratos.CasosDeUso;
+using Application.Funcionalidades.Notificacoes.Contratos.CasosDeUso;
 using Application.Funcionalidades.UsuarioAutenticado.Servicos;
 using Application.Utils.Transacao;
 using Domain.Enumeradores;
 using Domain.Excecoes;
-using Microsoft.AspNetCore.Http;
 using Repository.Repositorios.Notificacoes;
 
 namespace Application.Funcionalidades.Notificacoes.CasosDeUso
@@ -34,8 +33,7 @@ namespace Application.Funcionalidades.Notificacoes.CasosDeUso
             {
                 throw new ExcecaoAplicacao(
                     EnumCodigosDeExcecao.RegistroNaoEncontrado,
-                    "Notificacao nao encontrada.",
-                    StatusCodes.Status404NotFound);
+                    "Notificacao nao encontrada.");
             }
 
             if (notificacao.Lida)

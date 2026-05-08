@@ -3,6 +3,8 @@ using Application.Funcionalidades.Tarefas.Eventos;
 using Application.Interfaces.Messaging;
 using Application.Messaging;
 using Application.Observabilidade;
+using Domain.Enumeradores;
+using Domain.Excecoes;
 using Infra.Messaging.RabbitMQ.Channels;
 using Infra.Messaging.RabbitMQ.Topology;
 using Microsoft.Extensions.Logging;
@@ -41,7 +43,8 @@ namespace Infra.Messaging.RabbitMQ.Publicadores
             var eventType = typeof(T);
 
             if (!RoutingMap.TryGetValue(eventType, out var routingKey))
-                throw new InvalidOperationException(
+                throw new ExcecaoInfra(
+                    EnumCodigosDeExcecao.RoutingKeyNaoConfigurada,
                     $"RoutingKey nao configurada para {eventType.Name}");
 
             using var activity = ObservabilidadeFonte.ActivitySource.StartActivity(

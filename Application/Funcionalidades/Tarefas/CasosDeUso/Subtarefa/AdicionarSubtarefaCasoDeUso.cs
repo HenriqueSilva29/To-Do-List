@@ -1,4 +1,4 @@
-﻿using Application.Funcionalidades.Tarefas.Dtos.Subtarefas;
+using Application.Funcionalidades.Tarefas.Dtos.Subtarefas;
 using Application.Funcionalidades.Tarefas.Eventos;
 using Application.Funcionalidades.Tarefas.Contratos.CasosDeUso.Subtarefas;
 using Application.Funcionalidades.Tarefas.Mapeadores;
@@ -7,7 +7,6 @@ using Application.Utils.Transacao;
 using Domain.Enumeradores;
 using Domain.Excecoes;
 using Application.Interfaces.Messaging;
-using Microsoft.AspNetCore.Http;
 using Repository.Repositorios.Tarefas;
 
 namespace Application.Funcionalidades.Tarefas.CasosDeUso.Subtarefa
@@ -42,8 +41,7 @@ namespace Application.Funcionalidades.Tarefas.CasosDeUso.Subtarefa
                 if (!tarefaPaiExiste)
                     throw new ExcecaoAplicacao(
                         EnumCodigosDeExcecao.RegistroNaoEncontrado,
-                        "Tarefa pai nao encontrada no banco de dados",
-                        StatusCodes.Status404NotFound);
+                        "Tarefa pai nao encontrada no banco de dados");
             }
 
             var tarefa = MapeadorSubtarefa.ParaTarefa(dto);

@@ -1,10 +1,9 @@
-﻿
+
 using Application.Funcionalidades.Usuarios.Dtos;
 using Application.Funcionalidades.Usuarios.Contratos.CasosDeUso;
 using Application.Utils.Transacao;
 using Domain.Enumeradores;
 using Domain.Excecoes;
-using Microsoft.AspNetCore.Http;
 using Repository.Repositorios.Usuarios;
 
 namespace Application.Funcionalidades.Usuarios.CasosDeUso
@@ -29,8 +28,7 @@ namespace Application.Funcionalidades.Usuarios.CasosDeUso
             if (usuario == null)
                 throw new ExcecaoAplicacao(
                     EnumCodigosDeExcecao.RegistroNaoEncontrado,
-                    "Usuario nao encontrado na base de dados",
-                    StatusCodes.Status404NotFound);
+                    "Usuario nao encontrado na base de dados");
             
             usuario.AtualizarNomeDoUsuario(dto.Nome);
 

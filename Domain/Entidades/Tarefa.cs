@@ -1,12 +1,9 @@
 ﻿using Domain.Comum;
 using Domain.Comum.ObjetosDeValor;
-using Domain.Enumeradores;
-using Domain.Excecoes;
-using Microsoft.AspNetCore.Http;
 
 namespace Domain.Entidades
 {
-    public class Tarefa : IEntidadeId<int>
+    public class Tarefa : Entidade<int>
     {
         public Tarefa()
         {
@@ -16,7 +13,6 @@ namespace Domain.Entidades
 
         }
 
-        public int Id { get; set; }
         public string Titulo { get; set; }
         public string Descricao { get; set; }
         public UtcDateTime DataCriacao { get; set; }

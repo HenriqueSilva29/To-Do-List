@@ -3,8 +3,9 @@
     public class ExcecaoRepositorio : ExcecaoBase
     {
         public override string Title => "Erro ao executar o repositorio";
-        public ExcecaoRepositorio(string code, string message, int statusCode)
-        : base(code, message, statusCode) { }
+
+        public ExcecaoRepositorio(string code, string message)
+            : base(code, message) { }
     }
 }
 

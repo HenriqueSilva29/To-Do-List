@@ -1,4 +1,5 @@
 using Domain.Excecoes;
+using Domain.Enumeradores;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -29,8 +30,36 @@ namespace API.Errors
                 context,
                 exception.Code,
                 exception.Title,
-                exception.StatusCode,
+                ObterStatusHttp(exception),
                 exception.Message);
+        }
+
+        private static int ObterStatusHttp(ExcecaoBase exception)
+        {
+            return exception.Code switch
+            {
+                EnumCodigosDeExcecao.CredenciaisInvalidas => StatusCodes.Status401Unauthorized,
+                EnumCodigosDeExcecao.UsuarioNaoAutenticado => StatusCodes.Status401Unauthorized,
+
+                EnumCodigosDeExcecao.RegistroNaoEncontrado => StatusCodes.Status404NotFound,
+
+                EnumCodigosDeExcecao.UsuarioJaCadastrado => StatusCodes.Status409Conflict,
+                EnumCodigosDeExcecao.RegistroSemUsuarioVinculado => StatusCodes.Status409Conflict,
+                EnumCodigosDeExcecao.LembreteJaEnviado => StatusCodes.Status409Conflict,
+                EnumCodigosDeExcecao.PossuiSubtarefaNaoFinalizada => StatusCodes.Status409Conflict,
+                EnumCodigosDeExcecao.PossuiSubtarefaComPrioridadeMaiorQueTarefaPai => StatusCodes.Status409Conflict,
+
+                EnumCodigosDeExcecao.EnvelopeMensagemInvalido => StatusCodes.Status400BadRequest,
+                EnumCodigosDeExcecao.TipoMensagemNaoMapeado => StatusCodes.Status400BadRequest,
+
+                EnumCodigosDeExcecao.TopologiaRabbitNaoRegistrada => StatusCodes.Status500InternalServerError,
+                EnumCodigosDeExcecao.RoutingKeyNaoConfigurada => StatusCodes.Status500InternalServerError,
+                EnumCodigosDeExcecao.ErroAoSalvarContexto => StatusCodes.Status500InternalServerError,
+
+                _ when exception is ExcecaoDominio => StatusCodes.Status409Conflict,
+                _ when exception is ExcecaoInfra => StatusCodes.Status500InternalServerError,
+                _ => StatusCodes.Status400BadRequest
+            };
         }
 
         private static ProblemDetails CreateBadRequestProblem(

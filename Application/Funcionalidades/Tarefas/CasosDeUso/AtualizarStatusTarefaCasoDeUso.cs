@@ -1,11 +1,10 @@
-﻿using Application.Funcionalidades.Tarefas.Dtos;
+using Application.Funcionalidades.Tarefas.Dtos;
 using Application.Funcionalidades.Tarefas.Contratos.CasosDeUso;
 using Application.Funcionalidades.UsuarioAutenticado.Servicos;
 using Application.Utils.Transacao;
 using Domain.Entidades;
 using Domain.Enumeradores;
 using Domain.Excecoes;
-using Microsoft.AspNetCore.Http;
 using Repository.Repositorios.Tarefas;
 using static Domain.Entidades.Tarefa;
 
@@ -36,8 +35,7 @@ namespace Application.Funcionalidades.Tarefas.CasosDeUso
             if (tarefa is null)
                 throw new ExcecaoAplicacao(
                     EnumCodigosDeExcecao.RegistroNaoEncontrado,
-                    "Tarefa nao encontrada no banco de dados",
-                    StatusCodes.Status404NotFound);
+                    "Tarefa nao encontrada no banco de dados");
 
             var subtarefas = await _rep.RecuperarSubtarefasVinculadasAhTarefa(id, idUsuario);
 

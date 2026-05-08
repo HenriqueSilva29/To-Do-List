@@ -1,8 +1,6 @@
-﻿using Domain.Comum;
-
-namespace Application.Funcionalidades.Tarefas.Dtos.Subtarefas
+﻿namespace Application.Funcionalidades.Tarefas.Dtos.Subtarefas
 {
-    public class SubtarefaResposta : IEntidadeId<int>
+    public class SubtarefaResposta
     {
         public int Id { get; set; }
     }

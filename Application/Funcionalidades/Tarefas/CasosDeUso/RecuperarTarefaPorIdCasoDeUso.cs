@@ -1,9 +1,8 @@
-﻿using Application.Funcionalidades.Tarefas.Dtos;
+using Application.Funcionalidades.Tarefas.Dtos;
 using Application.Funcionalidades.Tarefas.Contratos.CasosDeUso;
 using Application.Funcionalidades.UsuarioAutenticado.Servicos;
 using Domain.Enumeradores;
 using Domain.Excecoes;
-using Microsoft.AspNetCore.Http;
 using Repository.Repositorios.Tarefas;
 
 namespace Application.Funcionalidades.Tarefas.CasosDeUso
@@ -30,8 +29,7 @@ namespace Application.Funcionalidades.Tarefas.CasosDeUso
             if (tarefa is null)
                 throw new ExcecaoAplicacao(
                     EnumCodigosDeExcecao.RegistroNaoEncontrado,
-                    $"Tarefa nao encontrada no banco de dados. Id: {id}",
-                    StatusCodes.Status404NotFound);
+                    $"Tarefa nao encontrada no banco de dados. Id: {id}");
 
             return new TarefaResposta
             {

@@ -7,20 +7,6 @@ namespace Application.Funcionalidades.Tarefas.Mapeadores
 {
     public static class MapeadorTarefa
     {
-        public static Tarefa Mapear(Tarefa Tarefa, CriarTarefaRequisicao dto)
-        {
-            Tarefa.Titulo = dto.Titulo;
-            Tarefa.Descricao = dto.Descricao;
-            Tarefa.DataCriacao = UtcDateTime.Now();
-            Tarefa.DataTarefa= dto.DataTarefa;
-            Tarefa.HoraInicio = dto.HoraInicio;
-            Tarefa.HoraFim = dto.HoraFim;
-            Tarefa.Categoria = dto.Categoria;
-            Tarefa.Prioridade = dto.Prioridade;
-
-            return Tarefa;
-        }
-
         public static Tarefa ToTarefa(CriarTarefaRequisicao dto)
         {
             return new Tarefa
@@ -36,33 +22,33 @@ namespace Application.Funcionalidades.Tarefas.Mapeadores
             };
         }
 
-        public static Tarefa AtualizarTarefaDto(Tarefa Tarefa, AtualizarTarefaRequisicao dto)
+        public static Tarefa AtualizarTarefaDto(Tarefa tarefa, AtualizarTarefaRequisicao dto)
         {
-            Tarefa.Titulo = dto.Titulo;
-            Tarefa.Descricao = dto.Descricao;
-            Tarefa.DataTarefa= dto.DataTarefa;
-            Tarefa.HoraInicio = dto.HoraInicio;
-            Tarefa.HoraFim = dto.HoraFim;
-            Tarefa.Prioridade = dto.Prioridade;
-            Tarefa.Categoria = dto.Categoria;
-            Tarefa.AtualizarStatus(dto.Status);
+            tarefa.Titulo = dto.Titulo;
+            tarefa.Descricao = dto.Descricao;
+            tarefa.DataTarefa = dto.DataTarefa;
+            tarefa.HoraInicio = dto.HoraInicio;
+            tarefa.HoraFim = dto.HoraFim;
+            tarefa.Prioridade = dto.Prioridade;
+            tarefa.Categoria = dto.Categoria;
+            tarefa.AtualizarStatus(dto.Status);
 
-            return Tarefa;
+            return tarefa;
         }
 
-        public static TarefaView MapearParaView(Tarefa Tarefa)
+        public static TarefaView MapearParaView(Tarefa tarefa)
         {
             return new TarefaView
             {
-                CodigoTarefa = Tarefa.Id,
-                Titulo = Tarefa.Titulo,
-                Descricao = Tarefa.Descricao,
-                DataCriacao = Tarefa.DataCriacao,
-                Status = Tarefa.Status,
-                Prioridade = Tarefa.Prioridade,
-                Categoria = Tarefa.Categoria,
-                CodigoTarefaPai = Tarefa.CodigoTarefaPai,
-                SubTarefas = Tarefa.SubTarefas?.Select(st => st.Id).ToList()
+                CodigoTarefa = tarefa.Id,
+                Titulo = tarefa.Titulo,
+                Descricao = tarefa.Descricao,
+                DataCriacao = tarefa.DataCriacao,
+                Status = tarefa.Status,
+                Prioridade = tarefa.Prioridade,
+                Categoria = tarefa.Categoria,
+                CodigoTarefaPai = tarefa.CodigoTarefaPai,
+                SubTarefas = tarefa.SubTarefas?.Select(st => st.Id).ToList()
             };
         }
     }

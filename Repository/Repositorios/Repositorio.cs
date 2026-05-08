@@ -5,8 +5,8 @@ using Repository.ContextosEF;
 namespace Repository.Repositorios
 {
 
-    public class Repositorio<T, TId> : IRepositorio<T, TId>
-    where T : class, IEntidadeId<TId>
+    public abstract class Repositorio<T, TId> : IRepositorio<T, TId>
+    where T : Entidade<TId>
     {
         public readonly ContextEF _context;
         private readonly DbSet<T> _dbSet;
@@ -14,36 +14,30 @@ namespace Repository.Repositorios
         public Repositorio(ContextEF context)
         {
             _context = context;
-            _dbSet = _context.Set<T>();
+            _dbSet = context.Set<T>();
         }
 
-        public IQueryable<T> AsQueryable()
+        public virtual IQueryable<T> AsQueryable()
         {
             return _dbSet.AsQueryable();
         }
 
-        public IEnumerable<T> AsEnumerable()
+        public virtual void Adicionar(T entity)
         {
-            return _dbSet.AsEnumerable();
+             _dbSet.Add(entity);
         }
 
-
-        public void Adicionar(T entity)
-        {
-             _dbSet.AddAsync(entity);
-        }
-
-        void IRepositorio<T, TId>.Atualizar(T entity)
+        public virtual void Atualizar(T entity)
         {
              _dbSet.Update(entity);
         }
 
-        void IRepositorio<T, TId>.Remover(T entity)
+        public virtual void Remover(T entity)
         {
              _dbSet.Remove(entity);
         }
 
-        public async Task<T?> RecuperarPorIdAsync(TId id)
+        public virtual async Task<T?> RecuperarPorIdAsync(TId id)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.Id!.Equals(id));
         }

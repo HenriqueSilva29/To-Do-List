@@ -1,30 +1,30 @@
 ﻿using Domain.Comum.ObjetosDeValor;
+using Domain.Comum;
 using Domain.Entidades;
+using Domain.Enumeradores;
+using Domain.Excecoes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Repository.ConfiguracoesEF;
-using Repository.ConfiguracoesEF.Consulta;
 using System.Text.Json;
 
 namespace Repository.ContextosEF
 {
     public class ContextEF : DbContext
     {
-        public ContextEF(DbContextOptions<ContextEF> options) : base(options) { }
+        private readonly IAuditoriaContexto? _auditoriaContexto;
+
+        public ContextEF(
+            DbContextOptions<ContextEF> options,
+            IAuditoriaContexto? auditoriaContexto = null) : base(options)
+        {
+            _auditoriaContexto = auditoriaContexto;
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new TarefaConfiguracao());
-            modelBuilder.ApplyConfiguration(new LembreteConfiguracao());
-            modelBuilder.ApplyConfiguration(new UsuarioConfiguracao());
-            modelBuilder.ApplyConfiguration(new AuditoriaConfiguracao());
-            modelBuilder.ApplyConfiguration(new ParamGeralConfiguracao());
-            modelBuilder.ApplyConfiguration(new NotificacaoConfiguracao());
-            modelBuilder.ApplyConfiguration(new HistoricoTarefaItemConsultaConfiguracao());
-
-            //modelBuilder.ApplyConfigurationsFromAssembly(typeof(ContextEF).Assembly); -- Esse codigo aplica todas as config acimas de uma só vez.
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ContextEF).Assembly);
         }
 
         public override async Task<int> SaveChangesAsync(
@@ -62,7 +62,10 @@ namespace Repository.ContextosEF
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message, e.InnerException);
+                throw new ExcecaoInfra(
+                    EnumCodigosDeExcecao.ErroAoSalvarContexto,
+                    "Erro ao salvar alteracoes no banco de dados",
+                    e);
             }
 
         }
@@ -87,7 +90,7 @@ namespace Repository.ContextosEF
                 {
                     Entidade = entry.Entity.GetType().Name,
                     Acao = entry.State.ToString(),
-                    IdUsuario = "TEMP",
+                    IdUsuario = ObterIdUsuarioAuditoria(),
                     Data = UtcDateTime.Now(),
                     Alteracoes = entry.State == EntityState.Added
                     ? string.Empty
@@ -150,6 +153,13 @@ namespace Repository.ContextosEF
             }
 
             return JsonSerializer.Serialize(alteracoes);
+        }
+
+        private string ObterIdUsuarioAuditoria()
+        {
+            return string.IsNullOrWhiteSpace(_auditoriaContexto?.IdUsuario)
+                ? "SISTEMA"
+                : _auditoriaContexto.IdUsuario;
         }
 
     }

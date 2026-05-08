@@ -1,4 +1,4 @@
-﻿using Application.Funcionalidades.Tarefas.Dtos;
+using Application.Funcionalidades.Tarefas.Dtos;
 using Application.Funcionalidades.Tarefas.Eventos;
 using Application.Interfaces.Context;
 using Application.Funcionalidades.Tarefas.Contratos.CasosDeUso;
@@ -7,7 +7,6 @@ using Application.Utils.Transacao;
 using Domain.Enumeradores;
 using Domain.Excecoes;
 using Application.Interfaces.Messaging;
-using Microsoft.AspNetCore.Http;
 using Repository.Repositorios.Tarefas;
 
 public class AdicionarTarefaCasoDeUso : IAdicionarTarefaCasoDeUso
@@ -34,8 +33,7 @@ public class AdicionarTarefaCasoDeUso : IAdicionarTarefaCasoDeUso
         if (!_usuarioContexto.IdUsuario.HasValue)
             throw new ExcecaoAplicacao(
                 EnumCodigosDeExcecao.UsuarioNaoAutenticado,
-                "Usuario autenticado nao identificado.",
-                StatusCodes.Status401Unauthorized);
+                "Usuario autenticado nao identificado.");
 
         await _unitOfWork.BeginTransactionAsync();
 

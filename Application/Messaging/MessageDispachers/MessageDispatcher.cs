@@ -3,6 +3,8 @@ using Application.Funcionalidades.Tarefas.Eventos;
 using Application.Interfaces.Messaging;
 using Application.Messaging;
 using Application.Observabilidade;
+using Domain.Enumeradores;
+using Domain.Excecoes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -32,11 +34,15 @@ public class MessageDispatcher : IMessageDispatcher
         var envelope = JsonSerializer.Deserialize<MessageEnvelope>(json);
 
         if (envelope == null)
-            throw new Exception("Envelope invalido");
+            throw new ExcecaoAplicacao(
+                EnumCodigosDeExcecao.EnvelopeMensagemInvalido,
+                "Envelope invalido");
 
         if (!types.TryGetValue(envelope.Type, out var eventType))
         {
-            throw new ApplicationException($"Tipo nao mapeado: {envelope.Type} ");
+            throw new ExcecaoAplicacao(
+                EnumCodigosDeExcecao.TipoMensagemNaoMapeado,
+                $"Tipo nao mapeado: {envelope.Type}");
         }
 
         var evento = JsonSerializer.Deserialize(envelope.Payload, eventType);
