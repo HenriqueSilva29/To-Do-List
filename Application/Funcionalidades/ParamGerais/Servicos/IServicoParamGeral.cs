@@ -5,7 +5,7 @@ namespace Application.Funcionalidades.ParamGerais.Servicos
 {
     public interface IServicoParamGeral
     {
-        Task<ParamGeral> Obter();
+        Task<ParamGeral> Listar();
         Task Atualizar(AtualizarParamGeralRequisicao dto);
     }
 }

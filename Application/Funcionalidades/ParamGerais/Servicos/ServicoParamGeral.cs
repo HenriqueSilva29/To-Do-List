@@ -17,7 +17,7 @@ namespace Application.Funcionalidades.ParamGerais.Servicos
             _atualizarParamGeralUseCase = atualizarParamGeralUseCase;
         }
 
-        public Task<ParamGeral> Obter()
+        public Task<ParamGeral> Listar()
             => _listarParamGeralUseCase.ExecutarAsync();
 
         public Task Atualizar(AtualizarParamGeralRequisicao dto)
