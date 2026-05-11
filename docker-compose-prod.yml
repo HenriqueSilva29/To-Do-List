@@ -1,18 +1,18 @@
 services:
   rabbitmq:
     image: rabbitmq:3.12-management
-    container_name: todolist-rabbitmq
+    container_name: todoitem-rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
-      - todolist-net
+      - todoitem-net
     restart: unless-stopped
 
   api:
-    container_name: todolist-api
+    container_name: todoitem-api
     build:
       context: .
       dockerfile: API/Dockerfile
@@ -27,11 +27,11 @@ services:
     ports:
       - "127.0.0.1:5000:8080"
     networks:
-      - todolist-net
+      - todoitem-net
     restart: unless-stopped
 
   worker:
-    container_name: todolist-worker
+    container_name: todoitem-worker
     build:
       context: .
       dockerfile: Worker/Dockerfile
@@ -39,14 +39,21 @@ services:
       rabbitmq:
         condition: service_started
     environment:
-      ConnectionStrings__Default: ${AZURE_SQL_CONNECTION_STRING}
+      ConnectionStrings__DefaultConnection: ${AZURE_SQL_CONNECTION_STRING}
       RabbitMQ__Uri: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/"
+      Email__Host: ${EMAIL_HOST}
+      Email__Port: ${EMAIL_PORT}
+      Email__UserName: ${EMAIL_USERNAME}
+      Email__Password: ${EMAIL_PASSWORD}
+      Email__FromEmail: ${EMAIL_FROM_EMAIL}
+      Email__FromName: ${EMAIL_FROM_NAME}
+      Email__UseSsl: "true"
     networks:
-      - todolist-net
+      - todoitem-net
     restart: unless-stopped
 
 networks:
-  todolist-net:
+  todoitem-net:
     driver: bridge
 
 volumes:
