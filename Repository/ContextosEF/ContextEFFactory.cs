@@ -21,8 +21,16 @@ namespace Repository.ContextosEF
 
             var config = builder.Build();
 
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    "Connection string 'DefaultConnection' nao configurada.");
+            }
+
             var optionsBuilder = new DbContextOptionsBuilder<ContextEF>();
-            optionsBuilder.UseSqlServer("Server=127.0.0.1,14333;Database=ToDoItem;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer(connectionString);
 
             return new ContextEF(optionsBuilder.Options);
         }
