@@ -19,9 +19,10 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ParamGeral>> Obter()
+        [Route("listar")]
+        public async Task<ActionResult<ParamGeral>> Listar()
         {
-            var result = await _aplic.Obter();
+            var result = await _aplic.Listar();
             return Ok(result);
         }
 
