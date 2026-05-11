@@ -8,15 +8,20 @@ namespace Repository.ContextosEF
     {
         public ContextEF CreateDbContext(string[] args)
         {
-            // Pega o diretório do projeto a partir do primeiro argumento, se existir
-            var basePath = args.Length > 0 ? args[0] : Directory.GetCurrentDirectory();
+            var basePath = args.Length > 0
+                ? args[0]
+                : ResolveApiProjectPath();
 
             Console.WriteLine($"Base path usado: {basePath}");
 
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(basePath)
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile($"appsettings.{environment}.json", optional: true)
+                .AddJsonFile("appsettings.Local.json", optional: true)
+                .AddJsonFile($"appsettings.{environment}.Local.json", optional: true)
                 .AddEnvironmentVariables();
 
             var config = builder.Build();
@@ -33,6 +38,20 @@ namespace Repository.ContextosEF
             optionsBuilder.UseSqlServer(connectionString);
 
             return new ContextEF(optionsBuilder.Options);
+        }
+
+        private static string ResolveApiProjectPath()
+        {
+            var currentDirectory = Directory.GetCurrentDirectory();
+
+            if (File.Exists(Path.Combine(currentDirectory, "appsettings.json")))
+                return currentDirectory;
+
+            var apiPath = Path.Combine(currentDirectory, "API");
+
+            return Directory.Exists(apiPath)
+                ? apiPath
+                : currentDirectory;
         }
     }
 }
