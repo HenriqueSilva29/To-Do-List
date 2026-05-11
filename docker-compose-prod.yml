@@ -22,7 +22,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__Default: ${AZURE_SQL_CONNECTION_STRING}
+      ConnectionStrings__DefaultConnection: ${AZURE_SQL_CONNECTION_STRING}
       RabbitMQ__Uri: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/"
     ports:
       - "127.0.0.1:5000:8080"
