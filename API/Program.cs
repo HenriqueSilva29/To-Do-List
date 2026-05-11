@@ -104,12 +104,6 @@ static void ValidateRequiredConfiguration(IConfiguration configuration)
 
     Require("ConnectionStrings:DefaultConnection");
     Require("RabbitMQ:Uri");
-    Require("Email:Host");
-    Require("Email:Port");
-    Require("Email:UserName");
-    Require("Email:Password");
-    Require("Email:FromEmail");
-    Require("Email:FromName");
 
     if (missingKeys.Count > 0)
     {
