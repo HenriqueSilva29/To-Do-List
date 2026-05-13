@@ -37,7 +37,8 @@ public class AdicionarTarefaCasoDeUso : IAdicionarTarefaCasoDeUso
 
         await _unitOfWork.BeginTransactionAsync();
 
-        var tarefa = MapeadorTarefa.ToTarefa(dto);
+        var tarefa = dto.MapCriarTarafaParaTarefa();
+        
         tarefa.VincularUsuario(_usuarioContexto.IdUsuario.Value);
 
         _rep.Adicionar(tarefa);

@@ -1,6 +1,6 @@
-﻿using Application.Funcionalidades.Notificacoes.Filtros;
-using Application.Funcionalidades.Notificacoes.Dtos;
+using Application.Funcionalidades.Notificacoes.Filtros;
 using Application.Funcionalidades.Notificacoes.Servicos;
+using Application.Funcionalidades.Notificacoes.Visoes;
 using Application.Utils.Paginacao;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +20,7 @@ namespace API.Controllers
         }
 
         [HttpGet("listar")]
-        public async Task<ActionResult<PaginacaoHelper<NotificacaoResposta>>> Listar([FromQuery] NotificacaoFiltroRequisicao filtro)
+        public async Task<ActionResult<PaginacaoHelper<NotificacaoView>>> Listar([FromQuery] NotificacaoFiltroRequisicao filtro)
         {
             var result = await _aplic.Listar(filtro);
             return Ok(result);
@@ -64,5 +64,3 @@ namespace API.Controllers
         }
     }
 }
-
-

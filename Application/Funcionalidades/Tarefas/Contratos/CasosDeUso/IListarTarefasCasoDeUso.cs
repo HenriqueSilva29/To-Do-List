@@ -1,13 +1,11 @@
-﻿using Application.Funcionalidades.Tarefas.Filtros;
+using Application.Funcionalidades.Tarefas.Filtros;
+using Application.Funcionalidades.Tarefas.Visoes;
 using Application.Utils.Paginacao;
-using Domain.Entidades;
 
 namespace Application.Funcionalidades.Tarefas.Contratos.CasosDeUso
 {
     public interface IListarTarefasCasoDeUso
     {
-        public Task<PaginacaoHelper<Tarefa>> Executar(TarefaFiltroRequisicao parametros);
+        public Task<PaginacaoHelper<TarefaView>> Executar(TarefaFiltroRequisicao parametros);
     }
 }
-
-

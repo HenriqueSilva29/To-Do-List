@@ -3,9 +3,8 @@ using Application.Funcionalidades.Tarefas.Dtos;
 using Application.Funcionalidades.Tarefas.Dtos.Subtarefas;
 using Application.Funcionalidades.Tarefas.Contratos.CasosDeUso;
 using Application.Funcionalidades.Tarefas.Contratos.CasosDeUso.Subtarefas;
-using Application.Funcionalidades.Tarefas.Servicos;
+using Application.Funcionalidades.Tarefas.Visoes;
 using Application.Utils.Paginacao;
-using Domain.Entidades;
 
 namespace Application.Funcionalidades.Tarefas.Servicos
 {
@@ -60,13 +59,13 @@ namespace Application.Funcionalidades.Tarefas.Servicos
         public  Task RemoverTarefa(int id)
             => _removerTarefa.Executar(id);
 
-        public Task<PaginacaoHelper<Tarefa>> ListarTarefas(TarefaFiltroRequisicao parametros)
+        public Task<PaginacaoHelper<TarefaView>> ListarTarefas(TarefaFiltroRequisicao parametros)
             => _listarTarefa.Executar(parametros);
 
-        public Task<TarefaResposta> ObterPorId(int id)
+        public Task<TarefaView> ObterPorId(int id)
             => _recuperarTarefaPorId.Executar(id);
 
-        public Task<SubtarefaResposta> AdicionarSubtarefa(AdicionarSubtarefaRequisicao dto)
+        public Task<SubtarefaCriadaResposta> AdicionarSubtarefa(AdicionarSubtarefaRequisicao dto)
             =>  _adicionarSubtarefa.Executar(dto);
 
         public Task<HistoricoTarefaResposta> RecuperarHistoricoPorId(int id)

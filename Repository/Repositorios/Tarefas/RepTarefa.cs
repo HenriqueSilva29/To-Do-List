@@ -32,10 +32,24 @@ namespace Repository.Repositorios.Tarefas
             return AsQueryable().Where(t => t.CodigoUsuario == idUsuario);
         }
 
+        public IQueryable<Tarefa> QueryTarefasPrincipaisPorUsuario(int idUsuario)
+        {
+            return QueryPorUsuario(idUsuario)
+                .Include(t => t.SubTarefas)
+                .Where(t => t.CodigoTarefaPai == null);
+        }
+
         public async Task<Tarefa?> ObterPorIdDoUsuarioAsync(int idTarefa, int idUsuario)
         {
             return await QueryPorUsuario(idUsuario)
                 .FirstOrDefaultAsync(t => t.Id == idTarefa);
+        }
+
+        public async Task<Tarefa?> ObterPorIdDoUsuarioComSubtarefasAsync(int idTarefa, int idUsuario)
+        {
+            return await QueryPorUsuario(idUsuario)
+                .Include(t => t.SubTarefas)
+                .FirstOrDefaultAsync(t => t.Id == idTarefa && t.CodigoTarefaPai == null);
         }
 
         public async Task<bool> ExistePorIdDoUsuarioAsync(int idTarefa, int idUsuario)

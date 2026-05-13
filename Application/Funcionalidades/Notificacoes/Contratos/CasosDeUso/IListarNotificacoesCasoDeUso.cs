@@ -1,12 +1,11 @@
 using Application.Funcionalidades.Notificacoes.Filtros;
-using Application.Funcionalidades.Notificacoes.Dtos;
+using Application.Funcionalidades.Notificacoes.Visoes;
 using Application.Utils.Paginacao;
 
 namespace Application.Funcionalidades.Notificacoes.Contratos.CasosDeUso
 {
     public interface IListarNotificacoesCasoDeUso
     {
-        Task<PaginacaoHelper<NotificacaoResposta>> ExecuteAsync(NotificacaoFiltroRequisicao filtro);
+        Task<PaginacaoHelper<NotificacaoView>> ExecuteAsync(NotificacaoFiltroRequisicao filtro);
     }
 }
-

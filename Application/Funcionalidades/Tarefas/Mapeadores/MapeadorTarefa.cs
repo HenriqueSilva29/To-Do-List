@@ -1,4 +1,4 @@
-﻿using Application.Funcionalidades.Tarefas.Dtos;
+using Application.Funcionalidades.Tarefas.Dtos;
 using Application.Funcionalidades.Tarefas.Visoes;
 using Domain.Comum.ObjetosDeValor;
 using Domain.Entidades;
@@ -7,7 +7,8 @@ namespace Application.Funcionalidades.Tarefas.Mapeadores
 {
     public static class MapeadorTarefa
     {
-        public static Tarefa ToTarefa(CriarTarefaRequisicao dto)
+        // DTO para ENTIDADE
+        public static Tarefa MapCriarTarafaParaEntidade(this CriarTarefaRequisicao dto)
         {
             return new Tarefa
             {
@@ -22,7 +23,12 @@ namespace Application.Funcionalidades.Tarefas.Mapeadores
             };
         }
 
-        public static Tarefa AtualizarTarefaDto(Tarefa tarefa, AtualizarTarefaRequisicao dto)
+        public static Tarefa MapCriarTarafaParaTarefa(this CriarTarefaRequisicao dto)
+        {
+            return dto.MapCriarTarafaParaEntidade();
+        }
+
+        public static Tarefa MapAtualizarTarefaParaEntidade(this AtualizarTarefaRequisicao dto, Tarefa tarefa)
         {
             tarefa.Titulo = dto.Titulo;
             tarefa.Descricao = dto.Descricao;
@@ -36,7 +42,13 @@ namespace Application.Funcionalidades.Tarefas.Mapeadores
             return tarefa;
         }
 
-        public static TarefaView MapearParaView(Tarefa tarefa)
+        public static Tarefa AtualizarTarefaDto(Tarefa tarefa, AtualizarTarefaRequisicao dto)
+        {
+            return dto.MapAtualizarTarefaParaEntidade(tarefa);
+        }
+
+        // ENTIDADE para VIEW
+        public static TarefaView MapEntidadeParaTarefaView(this Tarefa tarefa, bool incluirSubtarefas = false)
         {
             return new TarefaView
             {
@@ -44,14 +56,23 @@ namespace Application.Funcionalidades.Tarefas.Mapeadores
                 Titulo = tarefa.Titulo,
                 Descricao = tarefa.Descricao,
                 DataCriacao = tarefa.DataCriacao,
+                DataVencimento = tarefa.DataVencimento.Value == default ? null : tarefa.DataVencimento.Value,
+                DataTarefa = tarefa.DataTarefa,
+                HoraInicio = tarefa.HoraInicio,
+                HoraFim = tarefa.HoraFim,
                 Status = tarefa.Status,
                 Prioridade = tarefa.Prioridade,
                 Categoria = tarefa.Categoria,
                 CodigoTarefaPai = tarefa.CodigoTarefaPai,
-                SubTarefas = tarefa.SubTarefas?.Select(st => st.Id).ToList()
+                TotalSubtarefas = tarefa.SubTarefas?.Count ?? 0,
+                SubtarefasConcluidas = tarefa.SubTarefas?.Count(st => st.Status == Tarefa.EnumStatusTarefa.Concluida) ?? 0,
+                SubTarefas = incluirSubtarefas
+                    ? tarefa.SubTarefas?
+                        .OrderBy(st => st.DataCriacao.Value)
+                        .Select(st => st.MapEntidadeParaSubtarefaView())
+                        .ToList() ?? []
+                    : []
             };
         }
     }
 }
-
-

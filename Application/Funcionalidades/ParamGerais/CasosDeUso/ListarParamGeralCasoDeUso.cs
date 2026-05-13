@@ -1,4 +1,6 @@
 using Application.Funcionalidades.ParamGerais.Contratos.CasosDeUso;
+using Application.Funcionalidades.ParamGerais.Mapeadores;
+using Application.Funcionalidades.ParamGerais.Visoes;
 using Application.Funcionalidades.UsuarioAutenticado.Servicos;
 using Application.Utils.Transacao;
 using Domain.Entidades;
@@ -28,14 +30,14 @@ namespace Application.Funcionalidades.ParamGerais.CasosDeUso
             _servUsuarioAutenticado = servUsuarioAutenticado;
         }
 
-        public async Task<ParamGeral> ExecutarAsync()
+        public async Task<ParamGeralView> ExecutarAsync()
         {
             var idUsuario = _servUsuarioAutenticado.ObterIdUsuarioLogado();
 
             var paramGeral = await _rep.ObterPorUsuarioAsync(idUsuario);
 
             if (paramGeral is not null)
-                return paramGeral;
+                return paramGeral.MapEntidadeParaParamGeralView();
 
             var usuario = await _repUsuario.RecuperarPorIdAsync(idUsuario);
 
@@ -50,10 +52,7 @@ namespace Application.Funcionalidades.ParamGerais.CasosDeUso
             _rep.Adicionar(paramGeral);
             await _unitOfWork.CommitTransactionAsync();
 
-            return paramGeral;
+            return paramGeral.MapEntidadeParaParamGeralView();
         }
     }
 }
-
-
-

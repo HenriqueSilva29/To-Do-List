@@ -1,6 +1,6 @@
-using Application.Funcionalidades.Notificacoes.Filtros;
-using Application.Funcionalidades.Notificacoes.Dtos;
 using Application.Funcionalidades.Notificacoes.Contratos.CasosDeUso;
+using Application.Funcionalidades.Notificacoes.Filtros;
+using Application.Funcionalidades.Notificacoes.Visoes;
 using Application.Utils.Paginacao;
 
 namespace Application.Funcionalidades.Notificacoes.Servicos
@@ -30,7 +30,7 @@ namespace Application.Funcionalidades.Notificacoes.Servicos
             _excluirTodasNotificacoesUseCase = excluirTodasNotificacoesUseCase;
         }
 
-        public Task<PaginacaoHelper<NotificacaoResposta>> Listar(NotificacaoFiltroRequisicao filtro)
+        public Task<PaginacaoHelper<NotificacaoView>> Listar(NotificacaoFiltroRequisicao filtro)
             => _listarNotificacoesUseCase.ExecuteAsync(filtro);
 
         public Task<int> ContarNaoLidas()
@@ -49,4 +49,3 @@ namespace Application.Funcionalidades.Notificacoes.Servicos
             => _excluirTodasNotificacoesUseCase.ExecuteAsync();
     }
 }
-

@@ -1,6 +1,6 @@
-﻿using Application.Funcionalidades.ParamGerais.Dtos;
 using Application.Funcionalidades.ParamGerais.Contratos.CasosDeUso;
-using Domain.Entidades;
+using Application.Funcionalidades.ParamGerais.Dtos;
+using Application.Funcionalidades.ParamGerais.Visoes;
 
 namespace Application.Funcionalidades.ParamGerais.Servicos
 {
@@ -17,12 +17,10 @@ namespace Application.Funcionalidades.ParamGerais.Servicos
             _atualizarParamGeralUseCase = atualizarParamGeralUseCase;
         }
 
-        public Task<ParamGeral> Listar()
+        public Task<ParamGeralView> Listar()
             => _listarParamGeralUseCase.ExecutarAsync();
 
         public Task Atualizar(AtualizarParamGeralRequisicao dto)
             => _atualizarParamGeralUseCase.ExecuteAsync(dto);
     }
 }
-
-

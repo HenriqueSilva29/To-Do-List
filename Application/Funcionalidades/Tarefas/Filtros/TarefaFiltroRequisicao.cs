@@ -34,10 +34,6 @@ namespace Application.Funcionalidades.Tarefas.Filtros
         public EnumPrioridadeTarefa? Prioridade { get; set; }
         public EnumCategoriaTarefa? Categoria { get; set; }
 
-        public int? CodigoTarefaPai { get; set; }
-        public bool? ApenasTarefasPai { get; set; }
-        public bool? ApenasSubtarefas { get; set; }
-
         public Dictionary<string, Expression<Func<Tarefa, bool>>> ObterFiltros()
         {
             var filtros = new Dictionary<string, Expression<Func<Tarefa, bool>>>();
@@ -48,8 +44,8 @@ namespace Application.Funcionalidades.Tarefas.Filtros
             if (!string.IsNullOrWhiteSpace(Titulo))
                 filtros.Add("Titulo", x => x.Titulo.Contains(Titulo));
 
-            if (!string.IsNullOrEmpty(Descricao))
-                filtros.Add("Descricao", x => x.Descricao == Descricao);
+            if (!string.IsNullOrWhiteSpace(Descricao))
+                filtros.Add("Descricao", x => x.Descricao.Contains(Descricao));
 
             if (DataCriacao.HasValue)
                 filtros.Add("DataCriacao", x => x.DataCriacao.Value >= DataCriacao.Value);
@@ -57,17 +53,11 @@ namespace Application.Funcionalidades.Tarefas.Filtros
             if (Prioridade.HasValue)
                 filtros.Add("Prioridade", x => x.Prioridade == Prioridade.Value);
 
+            if (Status.HasValue)
+                filtros.Add("Status", x => x.Status == Status.Value);
+
             if (Categoria.HasValue)
                 filtros.Add("Categoria", x => x.Categoria == Categoria.Value);
-
-            if (CodigoTarefaPai.HasValue)
-                filtros.Add("CodigoTarefaPai", x => x.CodigoTarefaPai == CodigoTarefaPai.Value);
-
-            if (ApenasTarefasPai == true)
-                filtros.Add("ApenasTarefasPai", x => x.CodigoTarefaPai == null);
-
-            if (ApenasSubtarefas == true)
-                filtros.Add("ApenasSubtarefas", x => x.CodigoTarefaPai != null);
 
             return filtros;
         }

@@ -1,8 +1,8 @@
-﻿using Application.Funcionalidades.Tarefas.Filtros;
 using Application.Funcionalidades.Tarefas.Dtos;
 using Application.Funcionalidades.Tarefas.Dtos.Subtarefas;
+using Application.Funcionalidades.Tarefas.Filtros;
+using Application.Funcionalidades.Tarefas.Visoes;
 using Application.Utils.Paginacao;
-using Domain.Entidades;
 
 namespace Application.Funcionalidades.Tarefas.Servicos
 {
@@ -11,14 +11,11 @@ namespace Application.Funcionalidades.Tarefas.Servicos
         Task<TarefaResposta> AdicionarTarefa(CriarTarefaRequisicao dto);
         Task AtualizarTarefa(int id, AtualizarTarefaRequisicao dto);
         Task RemoverTarefa(int id);
-        Task<PaginacaoHelper<Tarefa>> ListarTarefas(TarefaFiltroRequisicao parametros);
+        Task<PaginacaoHelper<TarefaView>> ListarTarefas(TarefaFiltroRequisicao parametros);
         Task AtualizarPrioridade(int id, AtualizarPrioridadeTarefaRequisicao dto);
-        Task<TarefaResposta> ObterPorId(int id);
-        Task<SubtarefaResposta> AdicionarSubtarefa(AdicionarSubtarefaRequisicao dto);
+        Task<TarefaView> ObterPorId(int id);
+        Task<SubtarefaCriadaResposta> AdicionarSubtarefa(AdicionarSubtarefaRequisicao dto);
         Task AtualizarStatus(int id, AtualizarStatusTarefaRequisicao dto);
         Task<HistoricoTarefaResposta> RecuperarHistoricoPorId(int id);
     }
 }
-
-
-

@@ -1,6 +1,7 @@
-﻿using Application.Funcionalidades.Notificacoes.Filtros;
-using Application.Funcionalidades.Notificacoes.Dtos;
 using Application.Funcionalidades.Notificacoes.Contratos.CasosDeUso;
+using Application.Funcionalidades.Notificacoes.Filtros;
+using Application.Funcionalidades.Notificacoes.Mapeadores;
+using Application.Funcionalidades.Notificacoes.Visoes;
 using Application.Funcionalidades.UsuarioAutenticado.Servicos;
 using Application.Utils.Filtro;
 using Application.Utils.Ordenacao;
@@ -26,7 +27,7 @@ namespace Application.Funcionalidades.Notificacoes.CasosDeUso
             _usuarioAutenticado = usuarioAutenticado;
         }
 
-        public async Task<PaginacaoHelper<NotificacaoResposta>> ExecuteAsync(NotificacaoFiltroRequisicao filtro)
+        public async Task<PaginacaoHelper<NotificacaoView>> ExecuteAsync(NotificacaoFiltroRequisicao filtro)
         {
             var idUsuario = _usuarioAutenticado.ObterIdUsuarioLogado();
 
@@ -39,18 +40,9 @@ namespace Application.Funcionalidades.Notificacoes.CasosDeUso
             var pagina = await query.PaginarAsync(filtro.Pagina, filtro.QuantidadePorPagina);
 
             var notificacoes = pagina.Itens
-                .Select(n => new NotificacaoResposta
-                {
-                    Id = n.Id,
-                    Tipo = n.Tipo,
-                    Titulo = n.Titulo,
-                    Mensagem = n.Mensagem,
-                    Lida = n.Lida,
-                    DataCriacao = n.DataCriacao.Value,
-                    DataLeitura = n.DataLeitura.HasValue ? n.DataLeitura.Value.Value : null
-                });
+                .Select(n => n.MapEntidadeParaNotificacaoView());
 
-            return new PaginacaoHelper<NotificacaoResposta>(
+            return new PaginacaoHelper<NotificacaoView>(
                 notificacoes,
                 pagina.PaginaAtual,
                 pagina.QuantidadePorPagina,
@@ -58,6 +50,3 @@ namespace Application.Funcionalidades.Notificacoes.CasosDeUso
         }
     }
 }
-
-
-

@@ -30,7 +30,7 @@ namespace Application.Funcionalidades.Tarefas.CasosDeUso.Subtarefa
             _servUsuarioAutenticado = servUsuarioAutenticado;
         }
 
-        public async Task<SubtarefaResposta> Executar(AdicionarSubtarefaRequisicao dto)
+        public async Task<SubtarefaCriadaResposta> Executar(AdicionarSubtarefaRequisicao dto)
         {
             var idUsuario = _servUsuarioAutenticado.ObterIdUsuarioLogado();
 
@@ -44,16 +44,16 @@ namespace Application.Funcionalidades.Tarefas.CasosDeUso.Subtarefa
                         "Tarefa pai nao encontrada no banco de dados");
             }
 
-            var tarefa = MapeadorSubtarefa.ParaTarefa(dto);
-            tarefa.VincularUsuario(idUsuario);
+            var subtarefa = MapeadorSubtarefa.ParaSubtarefa(dto);
+            subtarefa.VincularUsuario(idUsuario);
 
             await _unitOfWork.BeginTransactionAsync();
-            _rep.Adicionar(tarefa);
+            _rep.Adicionar(subtarefa);
             await _unitOfWork.CommitTransactionAsync();
 
-            await _publisher.PublishAsync(new TarefaCriadaEvento(tarefa.Id));
+            await _publisher.PublishAsync(new TarefaCriadaEvento(subtarefa.Id));
 
-            return new SubtarefaResposta { Id = tarefa.Id };
+            return new SubtarefaCriadaResposta { Id = subtarefa.Id };
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Application.Funcionalidades.Tarefas.Contratos.CasosDeUso.Subtarefas
 {
     public interface IAdicionarSubtarefaCasoDeUso
     {
-        public Task<SubtarefaResposta> Executar(AdicionarSubtarefaRequisicao dto);
+        public Task<SubtarefaCriadaResposta> Executar(AdicionarSubtarefaRequisicao dto);
     }
 }
 

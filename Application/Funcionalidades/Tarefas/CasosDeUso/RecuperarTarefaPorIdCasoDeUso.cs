@@ -1,5 +1,6 @@
-using Application.Funcionalidades.Tarefas.Dtos;
 using Application.Funcionalidades.Tarefas.Contratos.CasosDeUso;
+using Application.Funcionalidades.Tarefas.Mapeadores;
+using Application.Funcionalidades.Tarefas.Visoes;
 using Application.Funcionalidades.UsuarioAutenticado.Servicos;
 using Domain.Enumeradores;
 using Domain.Excecoes;
@@ -20,24 +21,18 @@ namespace Application.Funcionalidades.Tarefas.CasosDeUso
             _servUsuarioAutenticado = servUsuarioAutenticado;
         }
 
-        public async Task<TarefaResposta> Executar(int id)
+        public async Task<TarefaView> Executar(int id)
         {
             var idUsuario = _servUsuarioAutenticado.ObterIdUsuarioLogado();
 
-            var tarefa = await _rep.ObterPorIdDoUsuarioAsync(id, idUsuario);
+            var tarefa = await _rep.ObterPorIdDoUsuarioComSubtarefasAsync(id, idUsuario);
 
             if (tarefa is null)
                 throw new ExcecaoAplicacao(
                     EnumCodigosDeExcecao.RegistroNaoEncontrado,
                     $"Tarefa nao encontrada no banco de dados. Id: {id}");
 
-            return new TarefaResposta
-            {
-                Id = tarefa.Id
-            };
+            return tarefa.MapEntidadeParaTarefaView(incluirSubtarefas: true);
         }
     }
 }
-
-
-

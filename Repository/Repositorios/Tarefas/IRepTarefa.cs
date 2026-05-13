@@ -9,7 +9,9 @@ namespace Repository.Repositorios.Tarefas
         public Task<List<Tarefa>> RecuperarSubtarefasVinculadasAhTarefa(int idTarefaPai);
         public Task<List<Tarefa>> RecuperarSubtarefasVinculadasAhTarefa(int idTarefaPai, int idUsuario);
         public IQueryable<Tarefa> QueryPorUsuario(int idUsuario);
+        public IQueryable<Tarefa> QueryTarefasPrincipaisPorUsuario(int idUsuario);
         public Task<Tarefa?> ObterPorIdDoUsuarioAsync(int idTarefa, int idUsuario);
+        public Task<Tarefa?> ObterPorIdDoUsuarioComSubtarefasAsync(int idTarefa, int idUsuario);
         public Task<bool> ExistePorIdDoUsuarioAsync(int idTarefa, int idUsuario);
     }
 }

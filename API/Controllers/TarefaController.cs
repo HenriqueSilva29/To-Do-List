@@ -2,10 +2,10 @@
 using Application.Funcionalidades.Tarefas.Dtos;
 using Application.Funcionalidades.Tarefas.Dtos.Subtarefas;
 using Application.Funcionalidades.Tarefas.Servicos;
+using Application.Funcionalidades.Tarefas.Visoes;
 using Application.Utils.Paginacao;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Repository.ModelosConsulta.Tarefas;
 
 namespace API.Controllers
 {
@@ -22,7 +22,7 @@ namespace API.Controllers
         }
 
         [HttpGet("listar-tarefas")]
-        public async Task<ActionResult<PaginacaoHelper<TarefaResposta>>> Listar([FromQuery] TarefaFiltroRequisicao filtro)
+        public async Task<ActionResult<PaginacaoHelper<TarefaView>>> Listar([FromQuery] TarefaFiltroRequisicao filtro)
         {
             var result = await aplic.ListarTarefas(filtro);
             return Ok(result);
@@ -67,7 +67,7 @@ namespace API.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TarefaResposta>> ObterPorId([FromRoute] int id)
+        public async Task<ActionResult<TarefaView>> ObterPorId([FromRoute] int id)
         {
             var tarefa = await aplic.ObterPorId(id);
 
@@ -78,7 +78,7 @@ namespace API.Controllers
         }
 
         [HttpPost("subtarefa")]
-        public async Task<ActionResult<SubtarefaResposta>> Criar(AdicionarSubtarefaRequisicao request)
+        public async Task<ActionResult<SubtarefaCriadaResposta>> Criar(AdicionarSubtarefaRequisicao request)
         {
             var result = await aplic.AdicionarSubtarefa(request);
 
@@ -86,7 +86,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}/historico")]
-        public async Task<ActionResult<HistoricoTarefaItemConsultaModelo>> Historico([FromRoute] int id)
+        public async Task<ActionResult<HistoricoTarefaResposta>> Historico([FromRoute] int id)
         {
             var historico = await aplic.RecuperarHistoricoPorId(id);
 

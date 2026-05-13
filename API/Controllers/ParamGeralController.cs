@@ -1,6 +1,6 @@
-﻿using Application.Funcionalidades.ParamGerais.Dtos;
+using Application.Funcionalidades.ParamGerais.Dtos;
 using Application.Funcionalidades.ParamGerais.Servicos;
-using Domain.Entidades;
+using Application.Funcionalidades.ParamGerais.Visoes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,20 +20,17 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("listar")]
-        public async Task<ActionResult<ParamGeral>> Listar()
+        public async Task<ActionResult<ParamGeralView>> Listar()
         {
             var result = await _aplic.Listar();
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<ActionResult<ParamGeral>> Atualizar([FromBody] AtualizarParamGeralRequisicao dto)
+        public async Task<ActionResult> Atualizar([FromBody] AtualizarParamGeralRequisicao dto)
         {
             await _aplic.Atualizar(dto);
             return NoContent();
         }
     }
 }
-
-
-

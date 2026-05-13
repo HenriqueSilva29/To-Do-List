@@ -1,8 +1,8 @@
-﻿using static Domain.Entidades.Tarefa;
+using static Domain.Entidades.Tarefa;
 
 namespace Application.Funcionalidades.Tarefas.Visoes
 {
-    public class TarefaView
+    public class SubtarefaView
     {
         public int CodigoTarefa { get; set; }
         public string Titulo { get; set; }
@@ -16,10 +16,5 @@ namespace Application.Funcionalidades.Tarefas.Visoes
         public EnumPrioridadeTarefa Prioridade { get; set; }
         public EnumCategoriaTarefa Categoria { get; set; }
         public int? CodigoTarefaPai { get; set; }
-        public int TotalSubtarefas { get; set; }
-        public int SubtarefasConcluidas { get; set; }
-        public IEnumerable<SubtarefaView> SubTarefas { get; set; } = [];
     }
 }
-
-
